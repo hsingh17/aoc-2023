@@ -2,8 +2,8 @@ import sys
 import typing
 
 
-def read_puzzle_input() -> list[str]:
-    with open("../input/input.txt", "r") as f:
+def read_puzzle_input(path: str) -> list[str]:
+    with open(path, "r") as f:
         return f.read().splitlines()
 
 
@@ -13,7 +13,12 @@ def solve(input: list[str]):
 
 def main():
     args = sys.argv
-    input: list[str] = read_puzzle_input()
+    if len(args) < 2:
+        print(f"Usage: python3 template.py <path_to_file>")
+        return
+
+    path = args[1]
+    input: list[str] = read_puzzle_input(path)
     solve(input)
 
 
