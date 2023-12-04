@@ -35,19 +35,20 @@ def find_power(moves: str) -> int:
         for cube in cubes:
             split = cube.strip().split(" ")
             num, color = int(split[0]), split[1]
-            if (color == "green"):
+            if color == "green":
                 max_green = max(num, max_green)
-            elif (color == "red"):
+            elif color == "red":
                 max_red = max(num, max_red)
             else:
                 max_blue = max(num, max_blue)
     return max_red * max_blue * max_green
 
+
 def solve(input: list[str]):
     sum = 0
     for i, game in enumerate(input):
         moves = game.split(":")[1]
-        power = find_power(moves) 
+        power = find_power(moves)
         print(power)
         sum += power
 
