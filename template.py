@@ -19,7 +19,7 @@ def main():
 
     path = args[1]
     input: list[str] = read_puzzle_input(path)
-    solve(input)
+    print(solve(input))
 
 
 if __name__ == "__main__":
