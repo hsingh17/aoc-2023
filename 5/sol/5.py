@@ -168,7 +168,7 @@ def solve(input: List[str]):
 def main():
     args = sys.argv
     if len(args) < 2:
-        print(f"Usage: python3 template.py <path_to_file>")
+        print(f"Usage: python3 5.py <path_to_file>")
         return
 
     path = args[1]
