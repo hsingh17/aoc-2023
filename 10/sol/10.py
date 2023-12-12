@@ -144,6 +144,7 @@ class Graph:
         return valid_pipes
 
     def find_loop_max_length(self, start: tuple[int, int]) -> int:
+        # Part 1:
         visited: set[tuple[int, int]] = set()
         r, c = start[0], start[1]
         neighbors = list(self.__get_neighbor_coords(r, c, self.graph[r][c]).values())
@@ -171,6 +172,8 @@ class Graph:
             cur_node2 = list(filter(lambda n: n not in visited, cur_node2_neighbors))[0]
             steps += 1
 
+        visited.add(cur_node1)
+        self.main_loop = visited
         return steps
 
     def find_main_loop(self) -> int:
@@ -182,6 +185,49 @@ class Graph:
             best = max(best, self.find_loop_max_length(self.start))
         return best
 
+    def __ray_cast_east(self, r: int, c: int) -> bool:
+        # The loop is just a polygon techincally so we can use point in polygon algorithm (Ray casting)
+        # PS: I didn't know about this algorithm, I just found after I realized
+        # that the loop is a polygon and looked up "math point inside or outside a polygon"
+        # https://en.wikipedia.org/wiki/Point_in_polygon
+        dr, dc = Graph.DIRECTIONS_DR_DC[Directions.EAST]
+        cur = self.graph[r][c]
+        intersections = 0
+        prev_intersection = None
+        while self.__is_in_bounds(r, c):
+            # If it's part of the main loop, then we may have intersected with edge of loop
+            cur = self.graph[r][c]
+            if (r, c) in self.main_loop:
+                if cur in ("|", "F", "L"):
+                    intersections += 1
+                    prev_intersection = cur
+                elif cur == "J" and prev_intersection == "L":
+                    intersections += 1
+                elif cur == "7" and prev_intersection == "F":
+                    intersections += 1
+
+            r, c = r + dr, c + dc
+
+        # If even: not enclosed
+        # If odd: enclosed
+        return False if intersections % 2 == 0 else True
+
+    def count_tiles_in_main_loop(self) -> int:
+        enclosed_tiles = 0
+        for r, row in enumerate(self.graph):
+            for c, _ in enumerate(row):
+                if (r, c) in self.main_loop:  # Part of loop so skip
+                    continue
+
+                if self.__ray_cast_east(r, c):
+                    enclosed_tiles += 1
+                    self.graph[r][c] = "@"
+
+        return enclosed_tiles
+
+    def __repr__(self) -> str:
+        return "\n".join(["".join(row) for row in self.graph])
+
 
 def read_puzzle_input(path: str) -> list[str]:
     with open(path, "r") as f:
@@ -190,7 +236,10 @@ def read_puzzle_input(path: str) -> list[str]:
 
 def solve(input: list[str]):
     graph = Graph(input)
-    return graph.find_main_loop()
+    graph.find_main_loop()
+    ret = graph.count_tiles_in_main_loop()
+    print(graph)
+    return ret
 
 
 def main():
